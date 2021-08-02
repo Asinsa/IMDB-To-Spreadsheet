@@ -37,7 +37,19 @@ def getData(movieTitle, yearOfRelease):
         'y': year
     }
     response = requests.get(data_URL, params=params).json()
-    pp.pprint(response)
+    #pp.pprint(response)
+    if response != {'Response': 'False', 'Error': 'Movie not found!'}:
+        information = [response['Director'], response['Genre'], response['Country'], response['Language'], response['imdbRating'], '=IMAGE("' + response['Poster'] + '")']
+        return information
+
+def update(row, info):
+    # Update Cell
+    column = 4
+    for columnInfo in info:
+        cell = sheet.cell(row, column)
+        if cell.value != "":
+            sheet.update_cell(row, column, columnInfo)
+            column = column + 1
 
 #Fetch column
 nameCol = sheet.col_values(1)
@@ -46,4 +58,4 @@ for i in range(len(nameCol)):
     if len(nameCol[i]) > 1 and nameCol[i] != "11. Film":
         if "-" in nameCol[i]:
             nameCol[i] = nameCol[i].split('-')[1].lstrip().split(' ')[0]
-        getData(nameCol[i], yearCol[i])
+            update(i, getData(nameCol[i], yearCol[i]))
